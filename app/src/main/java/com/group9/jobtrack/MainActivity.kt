@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.group9.jobtrack.data.JobApplication
+import com.group9.jobtrack.data.JourneyEntry
 import com.group9.jobtrack.navigation.JobTrackNavGraph
 import com.group9.jobtrack.ui.theme.JobTrackTheme
 
@@ -29,7 +30,11 @@ class MainActivity : ComponentActivity() {
                             platform = "JobStreet",
                             dateApplied = "Oct 15, 2026",
                             status = "Interview",
-                            notes = "First round technical interview scheduled."
+                            notes = "First round technical interview scheduled.",
+                            journey = listOf(
+                                JourneyEntry(status = "Applied", date = "Oct 15, 2026"),
+                                JourneyEntry(status = "Interview", date = "Oct 18, 2026", note = "Advanced to technical interview")
+                            )
                         ),
                         JobApplication(
                             id = "2",
@@ -38,7 +43,10 @@ class MainActivity : ComponentActivity() {
                             platform = "LinkedIn",
                             dateApplied = "Oct 18, 2026",
                             status = "Applied",
-                            notes = "Submitted resume and GitHub portfolio."
+                            notes = "Submitted resume and GitHub portfolio.",
+                            journey = listOf(
+                                JourneyEntry(status = "Applied", date = "Oct 18, 2026")
+                            )
                         ),
                         JobApplication(
                             id = "3",
@@ -47,7 +55,12 @@ class MainActivity : ComponentActivity() {
                             platform = "Company Portal",
                             dateApplied = "Oct 10, 2026",
                             status = "Offer",
-                            notes = "Received job offer letter, reviewing terms."
+                            notes = "Received job offer letter, reviewing terms.",
+                            journey = listOf(
+                                JourneyEntry(status = "Applied", date = "Oct 10, 2026"),
+                                JourneyEntry(status = "Interview", date = "Oct 14, 2026", note = "Passed design and coding rounds"),
+                                JourneyEntry(status = "Offer", date = "Oct 20, 2026", note = "Received formal offer letter")
+                            )
                         )
                     )
                 }

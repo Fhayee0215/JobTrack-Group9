@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.group9.jobtrack.data.JobApplication
+import com.group9.jobtrack.data.JourneyEntry
 import com.group9.jobtrack.ui.screens.AddApplicationScreen
 import com.group9.jobtrack.ui.screens.ApplicationDetailScreen
 import com.group9.jobtrack.ui.screens.DashboardScreen
@@ -39,6 +40,9 @@ fun JobTrackNavGraph(
                 onSaveApplication = { newApp ->
                     applications.add(0, newApp)
                     navController.popBackStack()
+                },
+                onAddAnother = { newApp ->
+                    applications.add(0, newApp)
                 }
             )
         }
@@ -54,9 +58,18 @@ fun JobTrackNavGraph(
             ApplicationDetailScreen(
                 application = currentApp,
                 onNavigateBack = { navController.popBackStack() },
-                onStatusChange = { newStatus ->
+                onStatusChange = { newStatus, date, note ->
                     if (appIndex != -1 && currentApp != null) {
-                        applications[appIndex] = currentApp.copy(status = newStatus)
+                        val newEntry = JourneyEntry(
+                            status = newStatus,
+                            date = date,
+                            note = note
+                        )
+                        val updatedJourney = currentApp.journey + newEntry
+                        applications[appIndex] = currentApp.copy(
+                            status = newStatus,
+                            journey = updatedJourney
+                        )
                     }
                 }
             )

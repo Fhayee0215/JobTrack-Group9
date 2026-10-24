@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 fun StatusBadge(status: String) {
     val (backgroundColor, textColor) = when (status) {
         "Applied" -> Color(0xFFE0E7FF) to Color(0xFF3730A3)
+        "Screening" -> Color(0xFFE0F2FE) to Color(0xFF0369A1)
         "Interview" -> Color(0xFFFEF3C7) to Color(0xFF92400E)
         "Offer" -> Color(0xFFD1FAE5) to Color(0xFF065F46)
         "Rejected" -> Color(0xFFFEE2E2) to Color(0xFF991B1B)
