@@ -26,10 +26,6 @@ import com.group9.jobtrack.ui.components.StatusBadge
 import java.text.SimpleDateFormat
 import java.util.*
 
-private val PrimaryBlue = Color(0xFF4F46E5)
-private val TextSecondary = Color(0xFF64748B)
-private val BorderGray = Color(0xFFE2E8F0)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApplicationDetailScreen(
@@ -61,6 +57,12 @@ fun ApplicationDetailScreen(
     var stageNote by remember { mutableStateOf("") }
     var showValidationError by remember { mutableStateOf(false) }
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val outlineColor = MaterialTheme.colorScheme.outline
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     if (showDatePicker) {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val datePickerState = rememberDatePickerState(
@@ -78,20 +80,20 @@ fun ApplicationDetailScreen(
                         }
                         showDatePicker = false
                     }
-                ) { Text("OK", color = PrimaryBlue, fontWeight = FontWeight.Bold) }
+                ) { Text("OK", color = primaryColor, fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancel", color = TextSecondary) }
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancel", color = secondaryColor) }
             },
-            colors = DatePickerDefaults.colors(containerColor = Color.White)
+            colors = DatePickerDefaults.colors(containerColor = surfaceColor)
         ) {
             DatePicker(
                 state = datePickerState,
                 colors = DatePickerDefaults.colors(
-                    containerColor = Color.White,
-                    selectedDayContainerColor = PrimaryBlue,
-                    todayContentColor = PrimaryBlue,
-                    todayDateBorderColor = PrimaryBlue
+                    containerColor = surfaceColor,
+                    selectedDayContainerColor = primaryColor,
+                    todayContentColor = primaryColor,
+                    todayDateBorderColor = primaryColor
                 )
             )
         }
@@ -121,7 +123,7 @@ fun ApplicationDetailScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -134,7 +136,7 @@ fun ApplicationDetailScreen(
                             text = application.position,
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B),
+                            color = onSurfaceColor,
                             modifier = Modifier.weight(1f)
                         )
                         StatusBadge(status = application.status)
@@ -143,7 +145,7 @@ fun ApplicationDetailScreen(
                     Text(
                         text = application.company,
                         style = MaterialTheme.typography.titleMedium,
-                        color = PrimaryBlue,
+                        color = primaryColor,
                         fontWeight = FontWeight.SemiBold
                     )
 
@@ -155,24 +157,24 @@ fun ApplicationDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.Language, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(16.dp))
-                            Text(text = application.platform, style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Icon(Icons.Outlined.Language, contentDescription = null, tint = secondaryColor, modifier = Modifier.size(16.dp))
+                            Text(text = application.platform, style = MaterialTheme.typography.bodyMedium, color = secondaryColor)
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.DateRange, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(16.dp))
-                            Text(text = "Applied ${application.dateApplied}", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Icon(Icons.Default.DateRange, contentDescription = null, tint = secondaryColor, modifier = Modifier.size(16.dp))
+                            Text(text = "Applied ${application.dateApplied}", style = MaterialTheme.typography.bodyMedium, color = secondaryColor)
                         }
                     }
                 }
             }
 
             // Application Journey Timeline
-            Text(text = "APPLICATION JOURNEY", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = TextSecondary)
+            Text(text = "APPLICATION JOURNEY", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = secondaryColor)
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = surfaceColor),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(
@@ -180,7 +182,7 @@ fun ApplicationDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     if (application.journey.isEmpty()) {
-                        Text(text = "No history recorded yet.", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                        Text(text = "No history recorded yet.", style = MaterialTheme.typography.bodyMedium, color = secondaryColor)
                     } else {
                         application.journey.forEachIndexed { index, entry ->
                             Row(
@@ -192,14 +194,14 @@ fun ApplicationDetailScreen(
                                         modifier = Modifier
                                             .size(14.dp)
                                             .clip(CircleShape)
-                                            .background(PrimaryBlue)
+                                            .background(primaryColor)
                                     )
                                     if (index < application.journey.size - 1) {
                                         Box(
                                             modifier = Modifier
                                                 .width(2.dp)
                                                 .height(40.dp)
-                                                .background(BorderGray)
+                                                .background(outlineColor)
                                         )
                                     }
                                 }
@@ -209,11 +211,11 @@ fun ApplicationDetailScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(text = entry.status, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B), fontSize = 15.sp)
+                                        Text(text = entry.status, fontWeight = FontWeight.Bold, color = onSurfaceColor, fontSize = 15.sp)
                                         Text(
                                             text = entry.date,
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = TextSecondary
+                                            color = secondaryColor
                                         )
                                     }
                                     if (entry.note.isNotBlank()) {
@@ -221,7 +223,7 @@ fun ApplicationDetailScreen(
                                         Text(
                                             text = entry.note,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = TextSecondary
+                                            color = secondaryColor
                                         )
                                     }
                                 }
@@ -233,17 +235,17 @@ fun ApplicationDetailScreen(
 
             // Notes Section
             if (application.notes.isNotBlank()) {
-                Text(text = "NOTES", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = TextSecondary)
+                Text(text = "NOTES", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = secondaryColor)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Text(
                         text = application.notes,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF1E293B),
+                        color = onSurfaceColor,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -255,7 +257,7 @@ fun ApplicationDetailScreen(
             Button(
                 onClick = { showUpdateModal = true },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
             ) {
                 Text("Update Stage")
             }
@@ -279,12 +281,12 @@ fun ApplicationDetailScreen(
                         text = "Update Current Stage",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B)
+                        color = onSurfaceColor
                     )
                     Text(
                         text = "Select current phase of the process",
                         fontSize = 13.sp,
-                        color = TextSecondary
+                        color = secondaryColor
                     )
 
                     stages.forEach { stage ->
@@ -296,10 +298,10 @@ fun ApplicationDetailScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.outlinedCardColors(
-                                containerColor = if (selectedNewStage == stage) Color(0xFFEEF2FF) else Color.White
+                                containerColor = if (selectedNewStage == stage) Color(0xFFEEF2FF) else surfaceColor
                             ),
                             border = CardDefaults.outlinedCardBorder().copy(
-                                brush = androidx.compose.ui.graphics.SolidColor(if (selectedNewStage == stage) PrimaryBlue else BorderGray)
+                                brush = androidx.compose.ui.graphics.SolidColor(if (selectedNewStage == stage) primaryColor else outlineColor)
                             )
                         ) {
                             Row(
@@ -309,14 +311,14 @@ fun ApplicationDetailScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = stage, fontWeight = FontWeight.SemiBold, color = Color(0xFF1E293B))
+                                Text(text = stage, fontWeight = FontWeight.SemiBold, color = onSurfaceColor)
                                 RadioButton(
                                     selected = selectedNewStage == stage,
                                     onClick = {
                                         selectedNewStage = stage
                                         showValidationError = false
                                     },
-                                    colors = RadioButtonDefaults.colors(selectedColor = PrimaryBlue)
+                                    colors = RadioButtonDefaults.colors(selectedColor = primaryColor)
                                 )
                             }
                         }
@@ -342,7 +344,7 @@ fun ApplicationDetailScreen(
                         }
                     }
 
-                    Text(text = "Stage Date", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = Color(0xFF1E293B))
+                    Text(text = "Stage Date", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = onSurfaceColor)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -359,10 +361,10 @@ fun ApplicationDetailScreen(
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                disabledTextColor = Color(0xFF1E293B),
-                                disabledBorderColor = BorderGray,
-                                disabledLabelColor = TextSecondary,
-                                disabledTrailingIconColor = TextSecondary,
+                                disabledTextColor = onSurfaceColor,
+                                disabledBorderColor = outlineColor,
+                                disabledLabelColor = secondaryColor,
+                                disabledTrailingIconColor = secondaryColor,
                                 disabledContainerColor = Color.Transparent
                             ),
                             modifier = Modifier.fillMaxWidth(),
@@ -391,7 +393,7 @@ fun ApplicationDetailScreen(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                     ) {
                         Text("Confirm Update")
                     }
@@ -400,7 +402,7 @@ fun ApplicationDetailScreen(
                         onClick = { showUpdateModal = false },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Cancel", color = TextSecondary)
+                        Text("Cancel", color = secondaryColor)
                     }
                     Spacer(modifier = Modifier.height(24.dp))
                 }

@@ -11,7 +11,7 @@ import com.group9.jobtrack.data.JobApplication
 import com.group9.jobtrack.data.JourneyEntry
 import com.group9.jobtrack.ui.screens.AddApplicationScreen
 import com.group9.jobtrack.ui.screens.ApplicationDetailScreen
-import com.group9.jobtrack.ui.screens.DashboardScreen
+import com.group9.jobtrack.ui.screens.MainContainerScreen
 
 @Composable
 fun JobTrackNavGraph(
@@ -20,10 +20,15 @@ fun JobTrackNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Dashboard.route
+        startDestination = Screen.Dashboard.createRoute("Dashboard")
     ) {
-        composable(Screen.Dashboard.route) {
-            DashboardScreen(
+        composable(
+            route = Screen.Dashboard.route,
+            arguments = listOf(navArgument("initialTab") { type = NavType.StringType; defaultValue = "Dashboard" })
+        ) { backStackEntry ->
+            val initialTab = backStackEntry.arguments?.getString("initialTab") ?: "Dashboard"
+            MainContainerScreen(
+                initialTab = initialTab,
                 applications = applications,
                 onAddClick = {
                     navController.navigate(Screen.AddApplication.route)
@@ -39,7 +44,9 @@ fun JobTrackNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onSaveApplication = { newApp ->
                     applications.add(0, newApp)
-                    navController.popBackStack()
+                    navController.navigate(Screen.Dashboard.createRoute("Applications")) {
+                        popUpTo(Screen.Dashboard.createRoute("Dashboard")) { inclusive = true }
+                    }
                 },
                 onAddAnother = { newApp ->
                     applications.add(0, newApp)

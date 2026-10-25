@@ -11,6 +11,8 @@ import com.group9.jobtrack.data.JobApplication
 import com.group9.jobtrack.data.JourneyEntry
 import com.group9.jobtrack.navigation.JobTrackNavGraph
 import com.group9.jobtrack.ui.theme.JobTrackTheme
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +22,9 @@ class MainActivity : ComponentActivity() {
             JobTrackTheme {
                 val navController = rememberNavController()
 
-                // Pre-populated applications so all flows can be tested immediately
+                // Pre-populated applications sorted chronologically (newest first)
                 val applications = remember {
-                    mutableStateListOf(
+                    val rawApplications = listOf(
                         JobApplication(
                             id = "1",
                             company = "Accenture",
@@ -63,6 +65,22 @@ class MainActivity : ComponentActivity() {
                             )
                         )
                     )
+
+                    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).apply {
+                        timeZone = TimeZone.getTimeZone("UTC")
+                    }
+
+                    val sorted = rawApplications.sortedByDescending { app ->
+                        try {
+                            dateFormatter.parse(app.dateApplied)?.time ?: 0L
+                        } catch (_: Exception) {
+                            0L
+                        }
+                    }
+
+                    mutableStateListOf<JobApplication>().apply {
+                        addAll(sorted)
+                    }
                 }
 
                 JobTrackNavGraph(

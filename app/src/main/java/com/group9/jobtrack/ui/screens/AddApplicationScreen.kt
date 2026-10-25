@@ -27,12 +27,6 @@ import com.group9.jobtrack.data.JourneyEntry
 import java.text.SimpleDateFormat
 import java.util.*
 
-private val PrimaryBlue = Color(0xFF4F46E5)
-private val BackgroundLight = Color(0xFFF8FAFC)
-private val TextPrimary = Color(0xFF1E293B)
-private val TextSecondary = Color(0xFF64748B)
-private val BorderGray = Color(0xFFE2E8F0)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddApplicationScreen(
@@ -64,6 +58,13 @@ fun AddApplicationScreen(
     var dateAppliedText by remember { mutableStateOf(dateFormatter.format(Date(currentTime))) }
     var showDatePicker by remember { mutableStateOf(false) }
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val outlineColor = MaterialTheme.colorScheme.outline
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val backgroundColor = MaterialTheme.colorScheme.background
+
     if (showDatePicker) {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val datePickerState = rememberDatePickerState(
@@ -81,20 +82,20 @@ fun AddApplicationScreen(
                         }
                         showDatePicker = false
                     }
-                ) { Text("OK", color = PrimaryBlue, fontWeight = FontWeight.Bold) }
+                ) { Text("OK", color = primaryColor, fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancel", color = TextSecondary) }
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancel", color = secondaryColor) }
             },
-            colors = DatePickerDefaults.colors(containerColor = Color.White)
+            colors = DatePickerDefaults.colors(containerColor = surfaceColor)
         ) {
             DatePicker(
                 state = datePickerState,
                 colors = DatePickerDefaults.colors(
-                    containerColor = Color.White,
-                    selectedDayContainerColor = PrimaryBlue,
-                    todayContentColor = PrimaryBlue,
-                    todayDateBorderColor = PrimaryBlue
+                    containerColor = surfaceColor,
+                    selectedDayContainerColor = primaryColor,
+                    todayContentColor = primaryColor,
+                    todayDateBorderColor = primaryColor
                 )
             )
         }
@@ -103,16 +104,16 @@ fun AddApplicationScreen(
     val actualPlatform = if (platformChoice == "Other") customPlatform.trim() else platformChoice
 
     Scaffold(
-        containerColor = BackgroundLight,
+        containerColor = backgroundColor,
         topBar = {
             TopAppBar(
-                title = { Text("New Application", color = TextPrimary, fontWeight = FontWeight.Bold) },
+                title = { Text("New Application", color = onSurfaceColor, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = onSurfaceColor)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundLight)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
             )
         }
     ) { innerPadding ->
@@ -142,7 +143,7 @@ fun AddApplicationScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column(
@@ -152,44 +153,41 @@ fun AddApplicationScreen(
                         // Company Name
                         OutlinedTextField(
                             value = company,
-                            onValueChange = {
-                                company = it
-                                showError = false
-                            },
+                            onValueChange = { company = it },
                             label = { Text("Company Name *") },
+                            placeholder = { Text("e.g. Google, Accenture") },
                             isError = showError && company.isBlank(),
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true
                         )
 
                         // Position Title
                         OutlinedTextField(
                             value = position,
-                            onValueChange = {
-                                position = it
-                                showError = false
-                            },
+                            onValueChange = { position = it },
                             label = { Text("Position Title *") },
+                            placeholder = { Text("e.g. Android Developer, UI/UX Designer") },
                             isError = showError && position.isBlank(),
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true
                         )
 
-                        // Platform Used Dropdown
+                        // Platform Dropdown
                         ExposedDropdownMenuBox(
                             expanded = expandedPlatform,
-                            onExpandedChange = { expandedPlatform = !expandedPlatform },
-                            modifier = Modifier.fillMaxWidth()
+                            onExpandedChange = { expandedPlatform = !expandedPlatform }
                         ) {
                             OutlinedTextField(
                                 value = platformChoice,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Platform Used *") },
+                                label = { Text("Platform *") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPlatform) },
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true),
+                                    .menuAnchor()
+                                    .fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
                             )
                             ExposedDropdownMenu(
@@ -208,15 +206,13 @@ fun AddApplicationScreen(
                             }
                         }
 
-                        // Custom platform text field if "Other" is selected
+                        // Custom platform input if "Other" is selected
                         if (platformChoice == "Other") {
                             OutlinedTextField(
                                 value = customPlatform,
-                                onValueChange = {
-                                    customPlatform = it
-                                    showError = false
-                                },
-                                label = { Text("Enter Platform Name *") },
+                                onValueChange = { customPlatform = it },
+                                label = { Text("Specify Platform *") },
+                                placeholder = { Text("e.g. Referral, Handshake, Glassdoor") },
                                 isError = showError && customPlatform.isBlank(),
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
@@ -241,10 +237,10 @@ fun AddApplicationScreen(
                                     }
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    disabledTextColor = TextPrimary,
-                                    disabledBorderColor = BorderGray,
-                                    disabledLabelColor = TextSecondary,
-                                    disabledTrailingIconColor = TextSecondary,
+                                    disabledTextColor = onSurfaceColor,
+                                    disabledBorderColor = outlineColor,
+                                    disabledLabelColor = secondaryColor,
+                                    disabledTrailingIconColor = secondaryColor,
                                     disabledContainerColor = Color.Transparent
                                 ),
                                 modifier = Modifier.fillMaxWidth(),
@@ -254,7 +250,7 @@ fun AddApplicationScreen(
 
                         // Current Stage Selector (Scrollable sideways buttons)
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(text = "Current Stage", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text(text = "Current Stage", style = MaterialTheme.typography.bodyMedium, color = secondaryColor)
                             LazyRow(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -266,8 +262,8 @@ fun AddApplicationScreen(
                                         label = { Text(stage, fontSize = 12.sp) },
                                         shape = RoundedCornerShape(20.dp),
                                         colors = FilterChipDefaults.filterChipColors(
-                                            selectedContainerColor = PrimaryBlue,
-                                            selectedLabelColor = Color.White
+                                            selectedContainerColor = primaryColor,
+                                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                                         )
                                     )
                                 }
@@ -312,7 +308,7 @@ fun AddApplicationScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text("Save Application", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
@@ -330,7 +326,7 @@ fun AddApplicationScreen(
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                            color = Color.White
+                            color = surfaceColor
                         ) {
                             Column(
                                 modifier = Modifier
@@ -357,12 +353,12 @@ fun AddApplicationScreen(
                                     text = "Application Saved!",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = TextPrimary
+                                    color = onSurfaceColor
                                 )
                                 Text(
                                     text = "${savedAppId?.company} — ${savedAppId?.position}",
                                     fontSize = 14.sp,
-                                    color = TextSecondary
+                                    color = secondaryColor
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
@@ -370,7 +366,7 @@ fun AddApplicationScreen(
                                         onSaveApplication(savedAppId!!)
                                     },
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text("View Applications")
@@ -391,7 +387,7 @@ fun AddApplicationScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
-                                    Text("Add Another", color = TextPrimary)
+                                    Text("Add Another", color = onSurfaceColor)
                                 }
                                 Spacer(modifier = Modifier.height(16.dp))
                             }
