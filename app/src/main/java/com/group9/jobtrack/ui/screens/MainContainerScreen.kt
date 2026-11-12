@@ -38,14 +38,15 @@ fun MainContainerScreen(
                     onClick = onAddClick,
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shape = RoundedCornerShape(24.dp),
-                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    shape = RoundedCornerShape(28.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
+                    // Prototype-accurate position: bottom-right floating right above the bottom bar
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -56,7 +57,6 @@ fun MainContainerScreen(
                 }
             }
         },
-        floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
             Surface(
                 color = MaterialTheme.colorScheme.surface,
