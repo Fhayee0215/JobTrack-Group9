@@ -382,7 +382,7 @@ fun ApplicationDetailScreen(
                     OutlinedTextField(
                         value = stageNote,
                         onValueChange = { stageNote = it },
-                        label = { Text("Note (Optional)") },
+                        label = { Text("Notes") },
                         placeholder = { Text("e.g. Technical panel interview, 15 min with recruiter") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
