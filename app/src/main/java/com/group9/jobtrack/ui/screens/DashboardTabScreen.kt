@@ -71,7 +71,7 @@ fun DashboardTabScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "AM",
+                    text = "JD",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp
