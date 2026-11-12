@@ -115,7 +115,8 @@ fun MainContainerScreen(
                     onApplicationClick = onApplicationClick
                 )
                 "Alerts" -> AlertsScreen(
-                    applications = applications
+                    applications = applications,
+                    onApplicationClick = onApplicationClick
                 )
                 "Analytics" -> AnalyticsScreen(
                     applications = applications

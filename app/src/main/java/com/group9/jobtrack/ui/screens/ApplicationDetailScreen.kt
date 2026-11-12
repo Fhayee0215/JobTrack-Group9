@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,6 +33,7 @@ import java.util.*
 fun ApplicationDetailScreen(
     application: JobApplication?,
     onNavigateBack: () -> Unit,
+    onDeleteApplication: (String) -> Unit,
     onStatusChange: (String, String, String) -> Unit // newStatus, date, note
 ) {
     if (application == null) {
@@ -42,6 +44,7 @@ fun ApplicationDetailScreen(
     }
 
     var showUpdateModal by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val stages = listOf("Applied", "Screening", "Interview", "Offer", "Rejected")
     var selectedNewStage by remember { mutableStateOf(application.status) }
@@ -64,6 +67,30 @@ fun ApplicationDetailScreen(
     val outlineColor = MaterialTheme.colorScheme.outline
     val surfaceColor = MaterialTheme.colorScheme.surface
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Application", fontWeight = FontWeight.Bold, color = onSurfaceColor) },
+            text = { Text("Are you sure you want to delete this application for ${application.position} at ${application.company}? This action cannot be undone.", color = secondaryColor) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        onDeleteApplication(application.id)
+                    }
+                ) {
+                    Text("Delete", color = Color(0xFFDC2626), fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel", color = secondaryColor)
+                }
+            },
+            containerColor = surfaceColor
+        )
+    }
 
     if (showDatePicker) {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
@@ -109,6 +136,11 @@ fun ApplicationDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showDeleteConfirmation = true }) {
+                        Icon(Icons.Outlined.Delete, contentDescription = "Delete Application", tint = Color(0xFFDC2626))
                     }
                 }
             )

@@ -1,6 +1,7 @@
 package com.group9.jobtrack.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +24,7 @@ import java.util.*
 
 data class NotificationItem(
     val id: String,
+    val appId: String,
     val title: String,
     val time: String,
     val description: String,
@@ -34,7 +36,8 @@ data class NotificationItem(
 
 @Composable
 fun AlertsScreen(
-    applications: List<JobApplication>
+    applications: List<JobApplication>,
+    onApplicationClick: (String) -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
@@ -68,6 +71,7 @@ fun AlertsScreen(
                     list.add(
                         NotificationItem(
                             id = "int_${app.id}",
+                            appId = app.id,
                             title = "Upcoming Interview",
                             time = "Scheduled — $dateText",
                             description = noteText,
@@ -83,6 +87,7 @@ fun AlertsScreen(
                     list.add(
                         NotificationItem(
                             id = "off_${app.id}",
+                            appId = app.id,
                             title = "Offer Received",
                             time = "Review Period — $dateText",
                             description = noteText,
@@ -98,6 +103,7 @@ fun AlertsScreen(
                     list.add(
                         NotificationItem(
                             id = "app_${app.id}",
+                            appId = app.id,
                             title = "Follow up Needed",
                             time = "Application Tracking — $dateText",
                             description = noteText,
@@ -158,7 +164,8 @@ fun AlertsScreen(
                         description = item.description,
                         actionText = item.actionText,
                         iconTint = item.iconTint,
-                        iconBg = item.iconBg
+                        iconBg = item.iconBg,
+                        onClick = { onApplicationClick(item.appId) }
                     )
                 }
             }
@@ -177,7 +184,8 @@ fun NotificationCard(
     description: String,
     actionText: String,
     iconTint: Color,
-    iconBg: Color
+    iconBg: Color,
+    onClick: () -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
@@ -185,6 +193,9 @@ fun NotificationCard(
     val surfaceColor = MaterialTheme.colorScheme.surface
 
     Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = surfaceColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)

@@ -65,6 +65,10 @@ fun JobTrackNavGraph(
             ApplicationDetailScreen(
                 application = currentApp,
                 onNavigateBack = { navController.popBackStack() },
+                onDeleteApplication = { id ->
+                    applications.removeAll { it.id == id }
+                    navController.popBackStack()
+                },
                 onStatusChange = { newStatus, date, note ->
                     if (appIndex != -1 && currentApp != null) {
                         val newEntry = JourneyEntry(
