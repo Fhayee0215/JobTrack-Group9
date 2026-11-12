@@ -1,5 +1,6 @@
 package com.group9.jobtrack.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -50,9 +51,10 @@ fun ApplicationDetailScreen(
             timeZone = TimeZone.getTimeZone("UTC")
         }
     }
-    val currentTime = System.currentTimeMillis()
-    var selectedDateMillis by remember { mutableStateOf<Long?>(currentTime) }
-    var stageDateText by remember { mutableStateOf(dateFormatter.format(Date(currentTime))) }
+    
+    // Do not automatically populate dates for stage updates; let the user choose
+    var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
+    var stageDateText by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var stageNote by remember { mutableStateOf("") }
     var showValidationError by remember { mutableStateOf(false) }
@@ -66,7 +68,7 @@ fun ApplicationDetailScreen(
     if (showDatePicker) {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = selectedDateMillis,
+            initialSelectedDateMillis = selectedDateMillis ?: System.currentTimeMillis(),
             yearRange = (currentYear - 2)..(currentYear + 1)
         )
         DatePickerDialog(
@@ -77,6 +79,7 @@ fun ApplicationDetailScreen(
                         datePickerState.selectedDateMillis?.let { millis ->
                             selectedDateMillis = millis
                             stageDateText = dateFormatter.format(Date(millis))
+                            showValidationError = false
                         }
                         showDatePicker = false
                     }
@@ -324,27 +327,29 @@ fun ApplicationDetailScreen(
                         }
                     }
 
-                    if (selectedNewStage == "Interview" && showValidationError) {
+                    if (showValidationError) {
                         Surface(
                             color = Color(0xFFFEF3C7),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, Color(0xFFF59E0B))
                         ) {
                             Row(
-                                modifier = Modifier.padding(12.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.padding(14.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(Icons.Default.Warning, contentDescription = null, tint = Color(0xFFD97706), modifier = Modifier.size(20.dp))
                                 Text(
-                                    text = "Interview date required — Please add scheduled date for reminders.",
-                                    color = Color(0xFF92400E),
-                                    fontSize = 12.sp
+                                    text = "$selectedNewStage date required — Please add the scheduled date so we can set up reminders for you.",
+                                    color = Color(0xFFB45309),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
                         }
                     }
 
-                    Text(text = "Stage Date", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = onSurfaceColor)
+                    Text(text = "Stage Date *", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = onSurfaceColor)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -355,6 +360,8 @@ fun ApplicationDetailScreen(
                             onValueChange = {},
                             readOnly = true,
                             enabled = false,
+                            placeholder = { Text("Select ${selectedNewStage.lowercase()} date...") },
+                            isError = showValidationError && stageDateText.isBlank(),
                             trailingIcon = {
                                 IconButton(onClick = { showDatePicker = true }) {
                                     Icon(Icons.Default.DateRange, contentDescription = "Select Date")
@@ -362,7 +369,7 @@ fun ApplicationDetailScreen(
                             },
                             colors = OutlinedTextFieldDefaults.colors(
                                 disabledTextColor = onSurfaceColor,
-                                disabledBorderColor = outlineColor,
+                                disabledBorderColor = if (showValidationError && stageDateText.isBlank()) Color(0xFFF59E0B) else outlineColor,
                                 disabledLabelColor = secondaryColor,
                                 disabledTrailingIconColor = secondaryColor,
                                 disabledContainerColor = Color.Transparent
@@ -385,7 +392,7 @@ fun ApplicationDetailScreen(
 
                     Button(
                         onClick = {
-                            if (selectedNewStage == "Interview" && stageDateText.isBlank()) {
+                            if (stageDateText.isBlank()) {
                                 showValidationError = true
                             } else {
                                 onStatusChange(selectedNewStage, stageDateText, stageNote.ifBlank { "Moved to $selectedNewStage" })

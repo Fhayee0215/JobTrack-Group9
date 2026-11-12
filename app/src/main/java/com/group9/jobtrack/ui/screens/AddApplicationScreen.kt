@@ -53,9 +53,10 @@ fun AddApplicationScreen(
             timeZone = TimeZone.getTimeZone("UTC")
         }
     }
-    val currentTime = System.currentTimeMillis()
-    var selectedDateMillis by remember { mutableStateOf<Long?>(currentTime) }
-    var dateAppliedText by remember { mutableStateOf(dateFormatter.format(Date(currentTime))) }
+    
+    // Do not automatically populate dates; let the user choose
+    var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
+    var dateAppliedText by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
 
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -68,7 +69,7 @@ fun AddApplicationScreen(
     if (showDatePicker) {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = selectedDateMillis,
+            initialSelectedDateMillis = selectedDateMillis ?: System.currentTimeMillis(),
             yearRange = (currentYear - 2)..(currentYear + 1)
         )
         DatePickerDialog(
@@ -79,6 +80,7 @@ fun AddApplicationScreen(
                         datePickerState.selectedDateMillis?.let { millis ->
                             selectedDateMillis = millis
                             dateAppliedText = dateFormatter.format(Date(millis))
+                            showError = false
                         }
                         showDatePicker = false
                     }
@@ -132,7 +134,7 @@ fun AddApplicationScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Please complete all required fields (*), including platform.",
+                            text = "Please complete all required fields (*), including platform and date applied.",
                             color = Color(0xFF991B1B),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(14.dp)
@@ -231,6 +233,8 @@ fun AddApplicationScreen(
                                 readOnly = true,
                                 enabled = false,
                                 label = { Text("Date Applied *") },
+                                placeholder = { Text("Select date applied") },
+                                isError = showError && dateAppliedText.isBlank(),
                                 trailingIcon = {
                                     IconButton(onClick = { showDatePicker = true }) {
                                         Icon(Icons.Default.DateRange, contentDescription = "Select Date")
@@ -238,7 +242,7 @@ fun AddApplicationScreen(
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     disabledTextColor = onSurfaceColor,
-                                    disabledBorderColor = outlineColor,
+                                    disabledBorderColor = if (showError && dateAppliedText.isBlank()) MaterialTheme.colorScheme.error else outlineColor,
                                     disabledLabelColor = secondaryColor,
                                     disabledTrailingIconColor = secondaryColor,
                                     disabledContainerColor = Color.Transparent
@@ -288,7 +292,8 @@ fun AddApplicationScreen(
                 Button(
                     onClick = {
                         val isPlatformValid = if (platformChoice == "Other") customPlatform.isNotBlank() else platformChoice.isNotBlank()
-                        if (company.isNotBlank() && position.isNotBlank() && isPlatformValid) {
+                        val isDateValid = dateAppliedText.isNotBlank()
+                        if (company.isNotBlank() && position.isNotBlank() && isPlatformValid && isDateValid) {
                             val newApp = JobApplication(
                                 id = UUID.randomUUID().toString(),
                                 company = company.trim(),
@@ -381,6 +386,8 @@ fun AddApplicationScreen(
                                         customPlatform = ""
                                         selectedStage = "Applied"
                                         notes = ""
+                                        dateAppliedText = ""
+                                        selectedDateMillis = null
                                         showSuccessDialog = false
                                         savedAppId = null
                                     },
